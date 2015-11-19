@@ -2,7 +2,8 @@
 lunch reservation app
 
 Before run and execute REST API commands it's neccessary to have installed DB and defined db driver, url , username , password property values in the db.properties file located at src/main/resources
-During the mvn clean install all required dependencies will be fetched. DB schema is created while app is deployed to app server.
+During the mvn clean install all required dependencies will be fetched.
+DB schema is created while app is deployed to app server.
 
 
 Commands to execute :
