@@ -22,7 +22,9 @@ import java.io.Serializable;
 @NamedQueries({
         @NamedQuery(name = "MenuItems.findAll", query = "SELECT mi FROM MenuItem mi"),
         @NamedQuery(name = "MenuItems.findById", query = "SELECT mi FROM  MenuItem mi WHERE mi.id = :id"),
-        @NamedQuery(name = "MenuItems.findByDishName", query = "SELECT mi FROM  MenuItem mi WHERE mi.dishName = :dishName"),
+        @NamedQuery(name = "MenuItems.findByDishName", query = "SELECT mi FROM  MenuItem mi INNER JOIN FETCH mi.dailyMenu WHERE mi.dishName = :dishName"),
+        @NamedQuery(name = "MenuItems.findMenuItem", query = "SELECT mi FROM  MenuItem mi INNER JOIN FETCH mi.dailyMenu WHERE mi.dishName = :dishName" +
+                " AND  mi.dailyMenu.menuDate = :menuDate AND mi.dailyMenu.restaurantId.name = :restaurantName" ),
         @NamedQuery(name = "MenuItems.findByDailyMenu", query = "SELECT mi FROM  MenuItem mi WHERE mi.dishName = :dishName AND mi.dailyMenu = :dailyMenu"),
         @NamedQuery(name = "MenuItems.findByPrice", query = "SELECT mi FROM  MenuItem mi WHERE mi.price = :price")
 

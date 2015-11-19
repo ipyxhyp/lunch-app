@@ -22,7 +22,7 @@ import java.util.Date;
 
 
 @Entity
-@Table(name = "ClientDailyOrders" , uniqueConstraints = @UniqueConstraint(columnNames = {"ORDER_DATE"}))
+@Table(name = "ClientDailyOrders", uniqueConstraints = @UniqueConstraint(columnNames = {"CLIENT_ID", "ORDER_DATE"}) )
 @NamedQueries({
         @NamedQuery(name = "ClientDailyOrders.findAll", query = "SELECT cdo FROM ClientDailyOrder cdo"),
         @NamedQuery(name = "ClientDailyOrders.findById", query = "SELECT cdo FROM  ClientDailyOrder cdo WHERE cdo.id = :id"),
@@ -31,8 +31,7 @@ import java.util.Date;
         @NamedQuery(name = "ClientDailyOrders.findByOrderDate", query = "SELECT cdo FROM  ClientDailyOrder cdo WHERE cdo.orderDate = :orderDate"),
         @NamedQuery(name = "ClientDailyOrders.findByRestaurantId", query = "SELECT cdo FROM  ClientDailyOrder cdo WHERE cdo.restaurantId = :restaurantId"),
         @NamedQuery(name = "ClientDailyOrders.findByRestaurantOnToday", query = "SELECT cdo FROM  ClientDailyOrder cdo WHERE cdo.restaurantId = :restaurantId and cdo.orderDate = current_date"),
-        @NamedQuery(name = "ClientDailyOrders.findClientDailyOrder", query = "SELECT cdo FROM  ClientDailyOrder cdo " +
-                "WHERE cdo.restaurantId.name = :restaurantName AND cdo.clientId.name = :clientName AND cdo.menuItemId.dishName = :dishName AND cdo.orderDate = :orderDate"),
+        @NamedQuery(name = "ClientDailyOrders.findClientDailyOrder", query = "SELECT DISTINCT(cdo) FROM  ClientDailyOrder cdo INNER JOIN cdo.restaurantId INNER JOIN cdo.clientId INNER JOIN cdo.menuItemId  WHERE cdo.clientId.name = :clientName AND cdo.orderDate = :orderDate")
 
 })
 public class ClientDailyOrder implements Serializable {
@@ -198,9 +197,9 @@ public class ClientDailyOrder implements Serializable {
     public String toString() {
         return "ClientDailyOrder{" +
                 "id=" + id +
-                ", restaurantId=" + restaurantId +
-                ", clientId=" + clientId +
-                ", menuItemId=" + menuItemId +
+                ", restaurantId=" + restaurantId.getId() +
+                ", clientId=" + clientId.getId() +
+                ", menuItemId=" + menuItemId.getDishName() +
                 ", orderDate=" + orderDate +
                 ", isVoted=" + isVoted +
                 '}';

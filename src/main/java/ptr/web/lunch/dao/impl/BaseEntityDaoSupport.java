@@ -30,7 +30,7 @@ public class BaseEntityDaoSupport extends HibernateDaoSupport {
             return entity;
         }
         catch (Exception ex){
-            logger.error("<<<<< Error while saving entityList "+ entity+" >>>> "+ex);
+            logger.error("<<<<< Error while saving entity "+ entity+" >>>> "+ex);
             throw new BaseEntitySaveException(ex.getMessage(), entityName);
         }
     }
@@ -46,12 +46,11 @@ public class BaseEntityDaoSupport extends HibernateDaoSupport {
                 currentSession.persist(entityName, entityToPersist);
                 logger.debug("=== entityList persisted" + entityToPersist);
             }
-            return entity;
         }
         catch (Exception ex){
             logger.error("<<<<< Error while persisting entityList "+ entity+" >>>> "+ex);
-            return  entity;
         }
+        return  entity;
     }
 
     public void saveEntityList(String entityName, List<? extends Serializable> entityList)  {

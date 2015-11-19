@@ -171,7 +171,7 @@ public class LunchServiceImpl implements LunchService {
     }
 
 
-
+//    @Transactional
     @Override
     public long addClientDailyOrder(ClientOrderDTO order) throws ParseException {
         long id = -1;
@@ -206,26 +206,32 @@ public class LunchServiceImpl implements LunchService {
                     clientDailyOrder.setClientId((Client)lunchDao.createClient(client));
 //                    clientDailyOrder.setClientId(client);
                     clientDailyOrder.setRestaurantId(dailyMenu.getRestaurantId());
-                    id = lunchDao.createClientDailyOrder(clientDailyOrder);
-                } else {
+                    try{
+                        id = lunchDao.createClientDailyOrder(clientDailyOrder);
+                    } catch (BaseEntitySaveException besEx){
 
+                        throw new RuntimeException("Existing client order already exists on requested date "+order, besEx);
+                    }
+                } else {
                     throw new RuntimeException("Daily menu with items in requested order not found "+order);
                 }
         }
         return id;
     }
 
+    @Transactional
     @Override
     public long updateClientDailyOrder(ClientOrderDTO order) throws ParseException{
 
         long updatedId = -1;
         ClientDailyOrder currentClientOrder = null;
-        if (isTodayLunchTimeValid()){
+        MenuItem menuItem  = lunchDao.findMenuItem(order.getMenuItemName(), order.getRestaurantName(), order.getParsedDate());
+        if (isLunchTimeValid(order.getParsedDate(), menuItem.getDailyMenu().getMenuDate())){
             currentClientOrder = lunchDao.findClientDailyOrder(order);
             if(currentClientOrder != null){
                 currentClientOrder.setOrderDate(order.getParsedDate());
                 currentClientOrder.setVoted(true);
-                currentClientOrder.setMenuItemId(lunchDao.findMenuItem(order.getMenuItemName(),null));
+                currentClientOrder.setMenuItemId(menuItem);
                 updatedId = lunchDao.updateClientDailyOrder(currentClientOrder);
             }
         } else {
@@ -253,7 +259,7 @@ public class LunchServiceImpl implements LunchService {
     * *
     * */
     private boolean isLunchTimeValid(Date orderDate, Date dailyMenuDate){
-
+        // modify order date to set up actual current HOUR and MINUTE and compare it with requested dailyMenuDate (11:00 AM)
         Calendar cal  = Calendar.getInstance();
         cal.setTime(dailyMenuDate);
         cal.set(Calendar.HOUR_OF_DAY, 11);

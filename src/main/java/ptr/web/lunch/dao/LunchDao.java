@@ -48,8 +48,9 @@ public interface LunchDao {
 
     MenuItem findMenuItem(long id);
 
-
     MenuItem findMenuItem(String name, DailyMenu dailyMenu);
+
+    MenuItem findMenuItem(String dishName,String restaurantName, Date date);
 
     DailyMenu findDailyMenu(long dailyMenuId);
 

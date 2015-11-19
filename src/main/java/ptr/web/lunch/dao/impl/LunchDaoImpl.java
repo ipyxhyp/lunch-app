@@ -7,6 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.annotations.Entity;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +44,8 @@ public class LunchDaoImpl extends BaseEntityDaoSupport implements LunchDao {
 
         List<TestDTO> testDtoList = new ArrayList<TestDTO>(10);
         Session currentSession = getSessionFactory().getCurrentSession();
-//        SQLQuery sqlQuery = currentSession.createSQLQuery(reportQuery);
-//        sqlQuery.setResultTransformer(Transformers.aliasToBean(ReportDTO.class));
         Query query = currentSession.getNamedQuery("Test.findAll");
         List<Test> testList = query.list();
-//        Test testObject = (Test) currentSession.get(Test.class, 1);
         if(testList != null && testList.size() > 0){
             testDtoList.add(new TestDTO(testList.get(0)));
         }
@@ -87,9 +85,6 @@ public class LunchDaoImpl extends BaseEntityDaoSupport implements LunchDao {
     @Transactional
     @Override
     public long createClientDailyOrder(ClientDailyOrder clientDailyOrder) {
-        //TODO findRestaurant - if not found - return else create new clientDailyOrder
-        // TODO find user by userName - if not exists - insertNew User as Client
-        // TODO optional - mark menuItem
         ClientDailyOrder createdOrder = (ClientDailyOrder)saveEntity("ClientDailyOrder", clientDailyOrder, (clientDailyOrder == null));
         return createdOrder.getId();
     }
@@ -170,15 +165,37 @@ public class LunchDaoImpl extends BaseEntityDaoSupport implements LunchDao {
                 query = currentSession.getNamedQuery("MenuItems.findByDailyMenu");
                 query.setParameter("dishName", name);
                 query.setParameter("dailyMenu", dailyMenu);
-
             }
-
             List<MenuItem> menuItems = query.list();
             if(menuItems != null && !menuItems.isEmpty()){
                 item =  menuItems.get(0);
             }
         } catch (Exception ex){
             logger.error(" <<< Exception thrown while getting roles user >>>", ex);
+        }
+        return item;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MenuItem findMenuItem(String dishName,String restaurantName, Date date  ) {
+        MenuItem item = null;
+        Session currentSession = null;
+        String queryName = "MenuItems.findMenuItem";
+        Query query = null;
+        try {
+            currentSession = getSessionFactory().getCurrentSession();
+            query = currentSession.getNamedQuery(queryName);
+            query.setParameter("dishName", dishName);
+            query.setParameter("restaurantName", restaurantName);
+            query.setParameter("menuDate", date);
+
+            List<MenuItem> menuItems = query.list();
+            if(menuItems != null && !menuItems.isEmpty()){
+                item =  menuItems.get(0);
+            }
+        } catch (Exception ex){
+            logger.error(" <<< Exception thrown while getting MenuItem >>>", ex);
         }
         return item;
     }
@@ -225,10 +242,8 @@ public class LunchDaoImpl extends BaseEntityDaoSupport implements LunchDao {
             try {
                  currentSession = getSessionFactory().getCurrentSession();
                  Query query = currentSession.getNamedQuery("ClientDailyOrders.findClientDailyOrder");
-                 query.setParameter("restaurantName",order.getRestaurantName());
                  query.setParameter("clientName",order.getUserName());
-                 query.setParameter("dishName",order.getMenuItemName());
-                 query.setParameter("orderDate",order.getOrderDate());
+                 query.setParameter("orderDate",order.getParsedDate());
                  List<ClientDailyOrder> clientOrders = query.list();
                  if(clientOrders != null && clientOrders.size() > 0){
                      clientDailyOrder = clientOrders.get(0);
@@ -240,12 +255,12 @@ public class LunchDaoImpl extends BaseEntityDaoSupport implements LunchDao {
         return clientDailyOrder;
     }
 
-    @Transactional
+   @Transactional
     @Override
     public long updateClientDailyOrder(ClientDailyOrder order) {
         long id = -1;
 
-        ClientDailyOrder clientDailyOrder = (ClientDailyOrder)saveEntity("ClientDailyOrder", order, (order.getId() == null));
+        ClientDailyOrder clientDailyOrder = (ClientDailyOrder)saveEntity("ClientDailyOrder", order, false);
         if(clientDailyOrder != null){
             id = clientDailyOrder.getId();
         }
