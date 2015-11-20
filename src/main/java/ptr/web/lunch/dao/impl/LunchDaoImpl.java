@@ -326,7 +326,6 @@ public class LunchDaoImpl extends BaseEntityDaoSupport implements LunchDao {
             logger.error(" <<< Exception thrown while getting DailyMenus.findByRestaurantOnDate >>>", ex);
         }
         return dailyMenuList;
-
     }
 
     private Date getShortDate(Date date){

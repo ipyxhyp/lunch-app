@@ -57,4 +57,6 @@ public interface LunchDao {
     Client findClient(String userName);
 
     ClientDailyOrder findClientDailyOrder(ClientOrderDTO order);
+
+    Object findEntity(String name, Long id);
 }

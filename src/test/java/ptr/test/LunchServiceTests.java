@@ -21,9 +21,13 @@ import ptr.web.lunch.services.LunchService;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
 //@RunWith(value = SpringJUnit4ClassRunner.class)
@@ -35,7 +39,8 @@ public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
     @Autowired
     private LunchService lunchService;
 
-    List<MenuItem> menuItems = new ArrayList(5);
+    List<MenuItem> menuItems1 = new ArrayList(5);
+    List<MenuItem> menuItems2 = new ArrayList(5);
     DailyMenuDTO dailyMenuDto = null;
 
     @Before
@@ -60,19 +65,32 @@ public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
 
 
         MenuItem item1 = new MenuItem("steak", new Double(150));
-        menuItems.add(item1);
+        menuItems1.add(item1);
         MenuItem item2 = new MenuItem("burger", new Double(120));
-        menuItems.add(item2);
+        menuItems1.add(item2);
         MenuItem item3 = new MenuItem("fish", new Double(120));
-        menuItems.add(item3);
+        menuItems1.add(item3);
         MenuItem item4 = new MenuItem("salad", new Double(100));
-        menuItems.add(item4);
+        menuItems1.add(item4);
         MenuItem item5 = new MenuItem("pasta", new Double(99));
-        menuItems.add(item5);
+        menuItems1.add(item5);
+
+        MenuItem item6 = new MenuItem("pizza", new Double(150));
+        menuItems2.add(item6);
+        MenuItem item7 = new MenuItem("schnitzel", new Double(120));
+        menuItems2.add(item7);
+        MenuItem item8 = new MenuItem("salmon", new Double(120));
+        menuItems2.add(item8);
+        MenuItem item9 = new MenuItem("paella", new Double(100));
+        menuItems2.add(item9);
+        MenuItem item10 = new MenuItem("kebab", new Double(99));
+        menuItems2.add(item5);
 
         dailyMenuDto = new DailyMenuDTO("2015-11-17", "XRestaurant");
-        dailyMenuDto.setLunchItems(menuItems);
+        dailyMenuDto.setLunchItems(menuItems1);
 
+        dailyMenuDto = new DailyMenuDTO("2015-11-20", "YRestaurant");
+        dailyMenuDto.setLunchItems(menuItems2);
     }
 
     @Test
@@ -82,10 +100,54 @@ public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
     }
 
     @Test
+    public void checkAddRole(){
+
+        //TODO not implemented yet
+        Role admin = new Role("Admin");
+        Role user = new Role("User");
+
+        ArrayList<Long> idList = new ArrayList<Long>(3);
+        idList.add(lunchService.addRole(admin));
+        idList.add(lunchService.addRole(user));
+        for(Long xId : idList){
+            assertNotNull(lunchService.findEntityById(Role.class.getName(), xId));
+        }
+    }
+
+    @Test
+    public void checkAddClient(){
+
+        //TODO not implemented yet
+        Role admin = new Role("Admin");
+        Role user = new Role("User");
+        lunchService.addRole(admin);
+        lunchService.addRole(user);
+        Client vasya = new Client("Vasya", admin);
+        Client petya = new Client("Petya", user);
+        Client fedya = new Client("Fedya", user);
+        ArrayList<Long> idList = new ArrayList<Long>(3);
+        idList.add(lunchService.addClient(vasya));
+        idList.add(lunchService.addClient(petya));
+        idList.add(lunchService.addClient(fedya));
+        for(Long xId : idList){
+            assertNotNull(lunchService.findEntityById(Client.class.getName(), xId));
+        }
+    }
+
+    @Test
+    public void checkRestaurant(){
+        Restaurant fishHouse = new Restaurant("Fish house", "Port 1");
+        Restaurant meatHouse = new Restaurant("Meat house", "Road 1");
+        assertNotNull(lunchService.findEntityById(Restaurant.class.getName(), lunchService.addRestaurant(fishHouse)));
+        assertNotNull(lunchService.findEntityById(Restaurant.class.getName(), lunchService.addRestaurant(meatHouse)));
+    }
+
+
+    @Test
     public void createMenuItems(){
 
-        List<Long> idList = new ArrayList<Long>(menuItems.size());
-        for(MenuItem item : menuItems){
+        List<Long> idList = new ArrayList<Long>(menuItems1.size());
+        for(MenuItem item : menuItems1){
             idList.add(lunchService.addMenuItem(item));
         }
         for(Long id : idList){
@@ -101,9 +163,9 @@ public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
        assertTrue(dailyMenuId != -1);
        DailyMenu dailyMenu = lunchService.findDailyMenu(dailyMenuId);
        assertTrue(dailyMenuId == dailyMenu.getId());
-       dailyMenuDto = new DailyMenuDTO("2015-11-17", "YRestaurant");
+       dailyMenuDto = new DailyMenuDTO("2015-11-17", "XRestaurant");
        // same daily menu can be in different restaurants
-       dailyMenuDto.setLunchItems(menuItems);
+       dailyMenuDto.setLunchItems(menuItems1);
        dailyMenuId = lunchService.addDailyMenu(dailyMenuDto);
        assertTrue(dailyMenuId != -1);
        dailyMenu = lunchService.findDailyMenu(dailyMenuId);

@@ -9,6 +9,7 @@ import ptr.web.lunch.model.MenuItem;
 import ptr.web.lunch.model.Restaurant;
 import ptr.web.lunch.model.Role;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -36,4 +37,6 @@ public interface LunchService {
     MenuItem findMenuItem(Long id, String name);
 
     DailyMenu findDailyMenu(long dailyMenuId);
+
+    Object findEntityById(String entityName, Long id);
 }

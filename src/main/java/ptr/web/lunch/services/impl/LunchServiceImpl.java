@@ -180,8 +180,6 @@ public class LunchServiceImpl implements LunchService {
             ClientDailyOrder clientDailyOrder = new ClientDailyOrder();
                 Date orderDate = order.getParsedDate();
                 String clientName = order.getUserName();
-            // TODO call it on update client order
-                //boolean isLunchTime = isLunchTimeValid(orderDate, new Date(System.currentTimeMillis()));
                 List<DailyMenu> dailyMenuList = lunchDao.getDailyMenuOnDate(order.getRestaurantName(), orderDate);
                 if(!dailyMenuList.isEmpty()){
                     DailyMenu dailyMenu = dailyMenuList.get(0);
@@ -204,7 +202,6 @@ public class LunchServiceImpl implements LunchService {
                         client = new Client(clientName, userRole);
                     }
                     clientDailyOrder.setClientId((Client)lunchDao.createClient(client));
-//                    clientDailyOrder.setClientId(client);
                     clientDailyOrder.setRestaurantId(dailyMenu.getRestaurantId());
                     try{
                         id = lunchDao.createClientDailyOrder(clientDailyOrder);
@@ -238,6 +235,11 @@ public class LunchServiceImpl implements LunchService {
             throw new RuntimeException(" <<< Order time is after 11:00 AM, order will not be accepted >>>");
         }
         return updatedId;
+    }
+
+
+    public Object findEntityById(String name, Long id){
+       return lunchDao.findEntity(name, id);
     }
 
     public long addClientDailyOrder(ClientDailyOrder order) {

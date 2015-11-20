@@ -69,4 +69,19 @@ public class BaseEntityDaoSupport extends HibernateDaoSupport {
             throw new BaseEntitySaveException(ex.getMessage(),entityName);
         }
     }
+
+    @Transactional(readOnly = true)
+    public Object findEntity(String name, Long id){
+        Object entity = null;
+        try{
+            Session currentSession = getSessionFactory().getCurrentSession();
+            logger.debug("=== retrieving the entity ===");
+            entity = currentSession.get(name , id);
+            logger.debug("=== entity got " + entity);
+        }
+        catch (Exception ex){
+            logger.error("<<<<< Error while getting entity "+ name +" by ID "+id+" >>>> "+ex);
+        }
+        return  entity;
+    }
 }
