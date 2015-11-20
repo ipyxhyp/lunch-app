@@ -28,9 +28,6 @@ import java.util.Date;
         @NamedQuery(name = "DailyMenus.findByRestaurantId", query = "SELECT dm FROM  DailyMenu dm INNER JOIN fetch dm.restaurantId WHERE dm.restaurantId.id = :restaurantId"),
         @NamedQuery(name = "DailyMenus.findByDate", query = "SELECT  DISTINCT(dm) FROM DailyMenu dm INNER join fetch dm.menuItems INNER JOIN fetch dm.restaurantId WHERE dm.menuDate = :menuDate"),
         @NamedQuery(name = "DailyMenus.findByRestaurantOnDate", query = "SELECT  DISTINCT(dm) FROM DailyMenu dm INNER join fetch dm.menuItems INNER JOIN fetch dm.restaurantId WHERE dm.menuDate = :menuDate AND dm.restaurantId.name = :restaurantName")
-//        @NamedQuery(name = "DailyMenus.findByRestaurantOnDate", query = "SELECT  DISTINCT(dm) FROM DailyMenu dm left join fetch dm.trainingCourseSectionCollection WHERE dm.menuDate = :menuDate AND dm.restaurantId.name = :restaurantName")
-//        SELECT DISTINCT (tc) FROM TrainingCourse tc left join fetch tc.trainingCourseSectionCollection where tc.courseId = :courseId
-
 })
 
 public class DailyMenu implements Serializable {
@@ -40,20 +37,14 @@ public class DailyMenu implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "ID", nullable = false)
     @Column(name = "ID", nullable = false)
-//    @Column(name = "DAILY_MENU_ID", nullable = false)
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dailyMenu", fetch = FetchType.LAZY)
     private Collection<MenuItem> menuItems;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-//    @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "ID")
-//    private Restaurant restaurantId;
-//    @Column(name = "RESTAURANT_ID", nullable = false)
-//    @PrimaryKeyJoinColumn
     private Restaurant restaurantId;
 
     @Column(name = "MENU_DATE", nullable = false)
@@ -67,12 +58,6 @@ public class DailyMenu implements Serializable {
         this.restaurantId = restaurantId;
         this.menuDate = menuDate;
     }
-
-//    public DailyMenu(Long id,  long restaurantId, Date menuDate) {
-//        this.id = id;
-//        this.restaurantId = restaurantId;
-//        this.menuDate = menuDate;
-//    }
 
     public Long getId() {
         return id;
@@ -97,14 +82,6 @@ public class DailyMenu implements Serializable {
     public void setRestaurantId(Restaurant restaurantId) {
         this.restaurantId = restaurantId;
     }
-
-//    public long getRestaurantId() {
-//        return restaurantId;
-//    }
-//
-//    public void setRestaurantId(long restaurantId) {
-//        this.restaurantId = restaurantId;
-//    }
 
     public Date getMenuDate() {
         return menuDate;

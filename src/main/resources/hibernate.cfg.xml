@@ -8,9 +8,9 @@
 
 		<!-- Connection settings -->
 		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-		<property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/peter_db</property>
-		<property name="hibernate.connection.username">peter</property>
-		<property name="hibernate.connection.password">peter</property>
+		<property name="hibernate.connection.url">${url}</property>
+		<property name="hibernate.connection.username">${username}</property>
+		<property name="hibernate.connection.password">${password}</property>
 		<!-- SQL dialect -->
 		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 

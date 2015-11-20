@@ -38,8 +38,6 @@ public class ClientDailyOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dailyMenu", fetch = FetchType.LAZY)
-//    private Collection<MenuItem> menuItems;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,14 +48,11 @@ public class ClientDailyOrder implements Serializable {
     @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "ID")
     private Restaurant restaurantId;
 
-//    @Column(name = "RESTAURANT_ID")
-//    private long restaurantId;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "CLIENT_ID", referencedColumnName = "ID")
     private Client clientId;
 
-//    @OneToOne(optional = false, fetch = FetchType.LAZY)
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "MENU_ITEM_ID", referencedColumnName = "ID")
     private MenuItem menuItemId;
@@ -72,13 +67,6 @@ public class ClientDailyOrder implements Serializable {
     public ClientDailyOrder() {
     }
 
-//    public ClientDailyOrder(Restaurant restaurantId, Client clientId, MenuItem menuItemId, Date orderDate, boolean voted) {
-//        this.restaurantId = restaurantId;
-//        this.clientId = clientId;
-//        this.menuItemId = menuItemId;
-//        this.orderDate = orderDate;
-//        isVoted = voted;
-//    }
 
     public ClientDailyOrder(Restaurant restaurantId, Client clientId, MenuItem menuItemId, Date orderDate, boolean voted) {
         this.restaurantId = restaurantId;
@@ -106,13 +94,6 @@ public class ClientDailyOrder implements Serializable {
         this.restaurantId = restaurantId;
     }
 
-//    public long getRestaurantId() {
-//        return restaurantId;
-//    }
-//
-//    public void setRestaurantId(long restaurantId) {
-//        this.restaurantId = restaurantId;
-//    }
 
     public Client getClientId() {
         return clientId;
@@ -127,8 +108,6 @@ public class ClientDailyOrder implements Serializable {
     }
 
     public void setMenuItemId(MenuItem menuItemId) {
-        // TODO add logic if currentDate is less than 11-00 AM then set menuItemId and setVoted(true)
-        // else do nothing
         this.menuItemId = menuItemId;
     }
 

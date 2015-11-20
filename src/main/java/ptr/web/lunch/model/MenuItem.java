@@ -49,7 +49,6 @@ public class MenuItem implements Serializable {
 
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "DAILY_MENU_ID")
     private DailyMenu dailyMenu;
 
 
