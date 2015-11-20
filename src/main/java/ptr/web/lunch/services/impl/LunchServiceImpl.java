@@ -11,6 +11,8 @@ import ptr.web.lunch.dto.ClientOrderDTO;
 import ptr.web.lunch.dto.DailyMenuDTO;
 import ptr.web.lunch.dto.LunchItemDTO;
 import ptr.web.lunch.exceptions.BaseEntitySaveException;
+import ptr.web.lunch.exceptions.LunchTimeExpiredException;
+import ptr.web.lunch.exceptions.OrderAlreadyConfirmedException;
 import ptr.web.lunch.model.Client;
 import ptr.web.lunch.model.ClientDailyOrder;
 import ptr.web.lunch.model.DailyMenu;
@@ -191,7 +193,7 @@ public class LunchServiceImpl implements LunchService {
                     Date dailyMenuDate = dailyMenu.getMenuDate();
                     if (isLunchTimeValid(orderDate, dailyMenuDate)){
                         clientDailyOrder.setOrderDate(orderDate);
-                        clientDailyOrder.setVoted(true);
+                        clientDailyOrder.setConfirmed(false);
                         clientDailyOrder.setMenuItemId(menuItemId);
                     } else {
                         throw new RuntimeException(" <<< Order time is after 11:00 AM, order will not be accepted >>>");
@@ -226,13 +228,16 @@ public class LunchServiceImpl implements LunchService {
         if (isLunchTimeValid(order.getParsedDate(), menuItem.getDailyMenu().getMenuDate())){
             currentClientOrder = lunchDao.findClientDailyOrder(order);
             if(currentClientOrder != null){
+                if(!currentClientOrder.isConfirmed()){
+                    throw new OrderAlreadyConfirmedException("Order "+currentClientOrder.getId() +" by "+currentClientOrder.getClientId().getName()+ " on date "+currentClientOrder.getOrderDate()+" has been confirmed already and can not be changed");
+                }
                 currentClientOrder.setOrderDate(order.getParsedDate());
-                currentClientOrder.setVoted(true);
+                currentClientOrder.setConfirmed(true);
                 currentClientOrder.setMenuItemId(menuItem);
                 updatedId = lunchDao.updateClientDailyOrder(currentClientOrder);
             }
         } else {
-            throw new RuntimeException(" <<< Order time is after 11:00 AM, order will not be accepted >>>");
+            throw new LunchTimeExpiredException(" <<< Order time is after 11:00 AM, order will not be accepted >>>");
         }
         return updatedId;
     }

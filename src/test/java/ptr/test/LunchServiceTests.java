@@ -13,6 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ptr.web.lunch.dto.ClientOrderDTO;
 import ptr.web.lunch.dto.DailyMenuDTO;
 import ptr.web.lunch.dto.LunchItemDTO;
+import ptr.web.lunch.exceptions.LunchTimeExpiredException;
+import ptr.web.lunch.exceptions.OrderAlreadyConfirmedException;
 import ptr.web.lunch.model.Client;
 import ptr.web.lunch.model.ClientDailyOrder;
 import ptr.web.lunch.model.DailyMenu;
@@ -30,8 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
@@ -218,12 +220,72 @@ public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
         assertEquals("Fedya", createdClientOrder.getClientId().getName());
     }
 
+    @Test
+    (expected = OrderAlreadyConfirmedException.class )
+    public void testUpdateClientDailyOrder(){
+        // createDailyOrder
+        try{
+            // menuItems populated in init() method
+            String userName = "John Smith";
+            String restaurantName = "Lunch House";
+            String orderDateString = "2015-11-22";
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date orderDate = sdf.parse(orderDateString);
+            dailyMenuDto = new DailyMenuDTO(orderDateString, restaurantName);
+            dailyMenuDto.setLunchItems(menuItems1);
+            String dishName = menuItems1.get(0).getDishName();
+            long dailyMenuId = lunchService.addDailyMenu(dailyMenuDto);
+            assertTrue(dailyMenuId != -1);
+            ClientOrderDTO order = new ClientOrderDTO (restaurantName, userName, dishName, orderDate);
+            long id = lunchService.addClientDailyOrder(order);
+            assertTrue(id > -1);
+            // look for created clientDaily order Id
+            ClientDailyOrder createdClientOrder = (ClientDailyOrder)lunchService.findEntityById(ClientDailyOrder.class.getName() , id);
+            ClientDailyOrder updatedClientOrder = null;
+            // verify client order values are equal to initial requested values
+            assertNotNull(createdClientOrder);
+            assertEquals(dishName, createdClientOrder.getMenuItemId().getDishName());
+            assertEquals(orderDate, createdClientOrder.getOrderDate());
+            assertEquals(userName, createdClientOrder.getClientId().getName());
+            // update Daily order with different MenuItem for same user, same Restaurant, same Date
+            dishName = menuItems1.get(1).getDishName(); // burger dishName from available items in DailyMenu
+            ClientOrderDTO updatedClientOrderDto = new ClientOrderDTO (restaurantName, userName, dishName, orderDate);
+            long updatedOrderId = lunchService.updateClientDailyOrder(updatedClientOrderDto);
+            assertTrue(updatedOrderId > -1);
+            updatedClientOrder = (ClientDailyOrder)lunchService.findEntityById(ClientDailyOrder.class.getName(), updatedOrderId);
+            assertTrue(updatedClientOrder.getId() == updatedOrderId);
+            assertTrue(updatedClientOrder.isConfirmed() == true);
+
+            dishName = menuItems1.get(2).getDishName(); //  dishName from available items in DailyMenu
+            updatedClientOrderDto.setMenuItemName(dishName);
+            // exception has to be thrown
+            lunchService.updateClientDailyOrder(updatedClientOrderDto);
+
+        } catch (ParseException pEx){
+                pEx.printStackTrace();
+        }
+    }
+
+
 
 
 
     @Test
     public void checkLunchTIme(){
 
+    }
+
+
+    private long addClientDailyOrder(String userName, String restaurantName, String dishName,
+            List<MenuItem> menuItems, String orderDateString) throws ParseException{
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date orderDate = sdf.parse(orderDateString);
+        DailyMenuDTO dailyMenuDto = new DailyMenuDTO(orderDateString, restaurantName);
+        dailyMenuDto.setLunchItems(menuItems);
+        long dailyMenuId = lunchService.addDailyMenu(dailyMenuDto);
+        ClientOrderDTO order = new ClientOrderDTO(restaurantName, userName, dishName, orderDate);
+        return lunchService.addClientDailyOrder(order);
     }
 
 }

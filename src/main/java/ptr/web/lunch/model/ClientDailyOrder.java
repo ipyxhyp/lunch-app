@@ -1,7 +1,6 @@
 package ptr.web.lunch.model;
 
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,12 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 
 
@@ -60,20 +57,21 @@ public class ClientDailyOrder implements Serializable {
     @Column(name = "ORDER_DATE", nullable = false)
     private Date orderDate;
 
-    @Column(name = "IS_VOTED")
-    private boolean isVoted;
+
+    @Column(name = "IS_CONFIRMED")
+    private boolean isConfirmed;
 
 
     public ClientDailyOrder() {
     }
 
 
-    public ClientDailyOrder(Restaurant restaurantId, Client clientId, MenuItem menuItemId, Date orderDate, boolean voted) {
+    public ClientDailyOrder(Restaurant restaurantId, Client clientId, MenuItem menuItemId, Date orderDate, boolean confirmed) {
         this.restaurantId = restaurantId;
         this.clientId = clientId;
         this.menuItemId = menuItemId;
         this.orderDate = orderDate;
-        isVoted = voted;
+        isConfirmed = confirmed;
     }
 
     public Long getId() {
@@ -119,13 +117,12 @@ public class ClientDailyOrder implements Serializable {
         this.orderDate = orderDate;
     }
 
-    public boolean isVoted() {
-        return isVoted;
+    public boolean isConfirmed() {
+        return isConfirmed;
     }
 
-    public void setVoted(boolean voted) {
-
-        isVoted = voted;
+    public void setConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
     }
 
     @Override
@@ -139,7 +136,7 @@ public class ClientDailyOrder implements Serializable {
 
         ClientDailyOrder that = (ClientDailyOrder) o;
 
-        if (isVoted != that.isVoted) {
+        if (isConfirmed != that.isConfirmed) {
             return false;
         }
         if (!clientId.equals(that.clientId)) {
@@ -168,7 +165,7 @@ public class ClientDailyOrder implements Serializable {
         result = 31 * result + clientId.hashCode();
         result = 31 * result + menuItemId.hashCode();
         result = 31 * result + orderDate.hashCode();
-        result = 31 * result + (isVoted ? 1 : 0);
+        result = 31 * result + (isConfirmed ? 1 : 0);
         return result;
     }
 
@@ -180,7 +177,7 @@ public class ClientDailyOrder implements Serializable {
                 ", clientId=" + clientId.getId() +
                 ", menuItemId=" + menuItemId.getDishName() +
                 ", orderDate=" + orderDate +
-                ", isVoted=" + isVoted +
+                ", isVoted=" + isConfirmed +
                 '}';
     }
 }
