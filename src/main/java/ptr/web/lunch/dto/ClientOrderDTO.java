@@ -24,6 +24,13 @@ public class ClientOrderDTO implements Serializable {
         this.orderDate = orderDate;
     }
 
+    public ClientOrderDTO(String restaurantName, String userName, String menuItemName, Date parsedDate) {
+        this.restaurantName = restaurantName;
+        this.userName = userName;
+        this.menuItemName = menuItemName;
+        this.parsedDate = parsedDate;
+    }
+
     public String getRestaurantName() {
         return restaurantName;
     }
