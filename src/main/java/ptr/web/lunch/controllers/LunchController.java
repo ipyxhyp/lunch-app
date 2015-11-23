@@ -79,79 +79,99 @@ public class LunchController {
     @RequestMapping(value = "/{userName}/createRestaurant/", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody long addRestaurant( @PathVariable("userName") String userName, @RequestBody Restaurant restaurant) {
+    public @ResponseBody ResultDTO addRestaurant( @PathVariable("userName") String userName, @RequestBody Restaurant restaurant) {
 
         long restaurantId = -1;
         logger.debug("=== addingRestaurant : "+ restaurant);
-        restaurantId = lunchService.addRestaurant(restaurant);
-        logger.debug("=== restaurantId : "+ restaurantId);
-        return restaurantId;
+        if(lunchService.isAdminRole(userName)){
+            restaurantId = lunchService.addRestaurant(restaurant);
+            logger.debug("=== restaurantId : "+ restaurantId+" created successfully ");
+            return new ResultDTO(String.valueOf(restaurantId),  "OK" , "Restaurant : "+restaurant+" created successfully");
+        } else {
+            return new ResultDTO(userName, "Fail", "User : "+userName+" does not have access rights to create restaurant" );      
+        }
+        
     }
 
     @RequestMapping(value = "/{userName}/createMenuItem", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody long addMenuItem(@PathVariable("userName") String userName, @RequestBody MenuItem item) {
-
+    public @ResponseBody ResultDTO addMenuItem(@PathVariable("userName") String userName, @RequestBody MenuItem item) {
         long Id = -1;
-        logger.debug("=== addingMenuItem : "+ item);
-        Id = lunchService.addMenuItem(item);
-        logger.debug("=== menuItemId : "+ Id);
-        return Id;
+        if(lunchService.isAdminRole(userName)){
+            logger.debug("=== addingMenuItem : "+ item);
+            Id = lunchService.addMenuItem(item);
+            logger.debug("=== menuItemId : "+ Id + " successfully created");
+            return new ResultDTO(String.valueOf(Id),  "OK" , "menuItemId : "+Id+" created successfully");
+        } else {
+            return new ResultDTO(userName, "Fail", "User : "+userName+" does not have access rights to create Menu Item" );      
+        }
     }
 
     @RequestMapping(value = "/{userName}/createMenuItemsList", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Collection<Long> createMenuItemsList(@PathVariable("userName") String userName,
+    public @ResponseBody ResultDTO createMenuItemsList(@PathVariable("userName") String userName,
             @RequestBody Collection<LunchItemDTO> itemList) {
         List<Long> menuIds = new ArrayList<Long>(10);
         long Id = -1;
-        logger.debug("=== createMenuItemsList : "+ itemList);
-        for(LunchItemDTO menuItemDTO : itemList){
-            Id = lunchService.addMenuItem(new MenuItem(menuItemDTO));
-            logger.debug("=== created menuItemId : "+ Id);
-            menuIds.add(Id);
+        if(lunchService.isAdminRole(userName)){
+            logger.debug("=== createMenuItemsList : "+ itemList);
+            for(LunchItemDTO menuItemDTO : itemList){
+                Id = lunchService.addMenuItem(new MenuItem(menuItemDTO));
+                logger.debug("=== created menuItemId : "+ Id);
+                menuIds.add(Id);
+            }
+            return new ResultDTO(menuIds.toString(),  "OK" , "menuItem list  : "+menuIds+" created successfully");
+        } else {
+            return new ResultDTO(userName, "Fail", "User : "+userName+" does not have access rights to create Menu Item List" );      
         }
-        return menuIds;
+        
     }
 
     @RequestMapping(value = "/{userName}/createDailyMenu", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody long addDailyMenu(@PathVariable("userName") String userName, @RequestBody DailyMenuDTO menu) {
-        long Id = -1;
-        try{
-            // TODO check if has role admin then addDailyMenu
-            logger.debug("=== addingDailyMenu : "+ menu);
-            Id = lunchService.addDailyMenu(menu);
-            logger.debug("=== DailyMenuId : "+ Id);
-
-        } catch (ParseException pEx){
-            throw new RuntimeException(pEx);
-        }
-        return Id;
+    public @ResponseBody ResultDTO addDailyMenu(@PathVariable("userName") String userName, @RequestBody DailyMenuDTO menu) {
+       
+        if(lunchService.isAdminRole(userName)){
+            try{
+                logger.debug("=== addingDailyMenu : "+ menu);
+                Long Id = lunchService.addDailyMenu(menu);
+                logger.debug("=== DailyMenuId : "+ Id);
+                return new ResultDTO(" Daily menu "+Id+" created ", "OK" , menu.toString());
+            } catch (ParseException pEx){
+                throw new RuntimeException(pEx);
+            }       
+        } else {
+          return new ResultDTO(userName, "Fail", "User : "+userName+" does not have access rights to create daily menu" );      
+        }                
     }
 
     @RequestMapping(value = "/{userName}/bulkCreateDailyMenus", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Collection<Long> bulkCreateDailyMenus(@PathVariable("userName") String userName,
+    public @ResponseBody ResultDTO bulkCreateDailyMenus(@PathVariable("userName") String userName,
                 @RequestBody Collection<DailyMenuDTO> menuList) {
         // TODO check if has role admin then addDailyMenu
         List<Long> createdDailyMenuIdList = new ArrayList<Long>(10);
         long Id = -1;
-        try{
-            for(DailyMenuDTO menu : menuList){
-                logger.debug("=== bulkCreateDailyMenus : "+ menuList);
-                Id = lunchService.addDailyMenu(menu);
-                logger.debug("=== DailyMenuId : "+ Id);
-                createdDailyMenuIdList.add(Id);
-            }
-        } catch (ParseException pEx){
-            throw new RuntimeException(pEx);
-        }
-        return createdDailyMenuIdList;
+       if(lunchService.isAdminRole(userName)){
+           try{
+                for(DailyMenuDTO menu : menuList){
+                    logger.debug("=== bulkCreateDailyMenus : "+ menuList);
+                    Id = lunchService.addDailyMenu(menu);
+                    logger.debug("=== DailyMenuId : "+ Id);
+                    createdDailyMenuIdList.add(Id);
+                }
+                return new ResultDTO(createdDailyMenuIdList.toString(), "OK",  "Bulk create daily menu successfully completed " );
+            } catch (ParseException pEx){
+                throw new RuntimeException(pEx);
+            }          
+       } else {
+           return new ResultDTO(userName, "Fail", "User : "+userName+" does not have access rights to create bulk daily menu" ); 
+       }
+       
     }
 
 
