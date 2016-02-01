@@ -39,7 +39,7 @@ import static junit.framework.TestCase.assertTrue;
 
 //@RunWith(value = SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
+public class LunchServiceTest extends AbstractJUnit4SpringContextTests {
 
 
     @Qualifier("lunchService")
@@ -267,12 +267,9 @@ public class LunchServiceTests extends AbstractJUnit4SpringContextTests {
     }
 
 
-
-
-
     @Test
-    public void checkLunchTIme(){
-
+    public void checkLunchTime(){
+        // skip, TODO impl
     }
 
 

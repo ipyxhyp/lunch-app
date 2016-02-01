@@ -23,7 +23,7 @@ import ptr.web.lunch.services.impl.LunchServiceImpl;
 
 import java.util.List;
 
-public class TestLunchApp extends TestCase {
+public class LocalTestLunchApp extends TestCase {
 
     private SessionFactory sessionFactory = null;
     private ServiceRegistry serviceRegistry = null;
