@@ -79,7 +79,7 @@ public class LunchController {
         return Id;
     }
 
-    @RequestMapping(value = "/{userName}/create/restaurant/", method = RequestMethod.POST,
+    @RequestMapping(value = "/{userName}/create/restaurant", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResultDTO addRestaurant( @PathVariable("userName") String userName, @RequestBody Restaurant restaurant) {
@@ -152,7 +152,7 @@ public class LunchController {
         }
     }
 
-    @RequestMapping(value = "/{userName}/create/dailyMenus", method = RequestMethod.POST,
+    @RequestMapping(value = "/{userName}/create/dailyMenuList", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResultDTO bulkCreateDailyMenus(@PathVariable("userName") String userName,
@@ -204,7 +204,7 @@ public class LunchController {
     }
 
 
-    @RequestMapping(value = "/update/clientDailyOrder", method = RequestMethod.POST,
+    @RequestMapping(value = "/update/dailyOrder", method = RequestMethod.POST,
             consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
             produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody long updateClientDailyOrder(@RequestBody ClientOrderDTO order) throws ParseException{
